@@ -1,6 +1,6 @@
 # Laracasts Downloader
 
-> This project is a fork of [github.com/carlosflorencio/laracasts-downloader](carlosflorencio/laracasts-downloader).
+> This project is a fork of [github.com/carlosflorencio/laracasts-downloader](https://github.com/carlosflorencio/laracasts-downloader).
 The original project is not maintained currently, but I had some issues with it, so I fixed it for myself.
 
 ## Features
