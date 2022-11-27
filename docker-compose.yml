@@ -1,20 +1,15 @@
-version: "3.7"
-
+version: '3.5'
 services:
-    composer:
-        image: composer:latest
-        container_name: composer
-        volumes:
-          - .:/usr/src/laracastdl
-        working_dir: /usr/src/laracastdl
-        command: composer install
 
-    laracastdl:
-        container_name: laracastdl
-        restart: "no"
-        build:
-            context: ./
-            dockerfile: docker/laracastdl/dockerfile
-        volumes:
-            - .:/usr/src/laracastdl
-        working_dir: /usr/src/laracastdl
+  laracastdl:
+    container_name: laracastdl
+    build:
+      context: ./docker/central-webstack-81
+      dockerfile: Dockerfile
+      args:
+        TZ: Europe/Budapest
+        WWWUSER: ${UID:-1000}
+        WWWGROUP: ${GID:-1000}
+        #COMPOSER_VER: 2
+    volumes:
+      - '.:/var/www/html'

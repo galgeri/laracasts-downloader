@@ -1,37 +1,40 @@
 # Laracasts Downloader
-[![Join the chat at https://gitter.im/laracasts-downloader](https://badges.gitter.im/laracasts-downloader.svg)](https://gitter.im/laracasts-downloader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/ac2fdb9a-222b-4244-b08e-af5d2f69845d/mini.png)](https://insight.sensiolabs.com/projects/ac2fdb9a-222b-4244-b08e-af5d2f69845d)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/iamfreee/laracasts-downloader/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/iamfreee/laracasts-downloader/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/iamfreee/laracasts-downloader/badges/build.png?b=master)](https://scrutinizer-ci.com/g/iamfreee/laracasts-downloader/build-status/master)
 
-Downloads new lessons and series from laracasts if there are updates. Or the whole catalogue.
+> This project is a fork of [github.com/carlosflorencio/laracasts-downloader](carlosflorencio/laracasts-downloader).
+The original project is not maintained currently, but I had some issues with it, so I fixed it for myself.
 
-**Currently looking for maintainers.**
+## Features
 
-## Description
-Syncs your local folder with the laracasts website, when there are new lessons the app download it for you.
+Downloads new lessons and series from Laracasts if there are updates. Or the whole catalog.
+
+Syncs your local folder with the Laracasts website, when there are new lessons the app downloads them for you.
 If your local folder is empty, all lessons and series will be downloaded!
 
-A .skip file is used to prevent downloading deleted lessons for these with space problems. Thanks to @vinicius73
+A .skip file is used to prevent downloading deleted lessons for those with space problems. Thanks to @vinicius73
 
 Just call `php makeskips.php` before deleting the lessons.
 
 > You need an active subscription account to use this script.
 
-
 ## Requirements
-- PHP >= 7.0
+
+### For manual installation
+
+- PHP >= 7.3
 - php-cURL
 - php-xml
 - php-json
 - Composer
 - [FFmpeg](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwio6vX03pT7AhU0X_EDHSx9BMkQFnoECAkQAQ&url=https%3A%2F%2Fffmpeg.org%2F&usg=AOvVaw19lCX0sMAnAOlyM2Pvp5-v) (required if ``DOWNLOAD_SOURCE=vimeo``)
 
-OR
+### For containerized, semi-automated installation
 
 - Docker
+- Docker Compose
+- On Linux GNU Make utility is recommended.
 
 ## Installation
+
 1. Clone this repo to your local machine.
 2. Make a local copy of the `.env` file:
 ```sh
@@ -39,10 +42,10 @@ $ cp .env.example .env
 ```
 3. Update your Laracasts account credentials (`EMAIL`, `PASSWORD`) in .env
 4. Decide whether you want to use **vimeo** or **laracasts** as `DOWNLOAD_SOURCE`.
-   By using Laracasts link you are limited to 30 downloads per day and can't customize video quality.
+   By using the Laracasts link you are limited to 30 downloads per day and can't customize video quality.
 6. Choose your preferred quality (240p, 360p, 540p, 720p, 1080p, 1440p, 2160p) by changing **VIDEO_QUALITY** in ``.env``.
    (will be ignored if `DOWNLOAD_SOURCE=laracasts`)
-7. The next steps, choose if you want a [local installation](#using-your-local-machine) or [a Docker based installation](#using-docker) and follow along.
+7. Choose if you want a local installation or a Docker-based installation, then follow the corresponding steps below.
 
 ### Using your local machine
 1. Install project dependencies:
@@ -55,7 +58,33 @@ $ php start.php
 ```
 3. See [downloading specific series or lessons](#downloading-specific-series-or-lessons) for optional flags.
 
-### Using Docker
+### Docker container, using Makefile (on Linux)
+
+A Makefile is provided for easy installation on Linux with Docker and Docker-Compose. The `make` utility must be installed.
+
+1. Setup container:
+```sh
+$ make install
+```
+During the setup, your Linux user account and group ID will be appended to your .env for the Docker container.
+
+2. Edit your `.env` file with your Laracasts account details (user account email and password).
+
+3. Enter the containers shell:
+```sh
+$ make shell
+```
+
+4. Start download in the container:
+```sh
+$ php ./start.php [empty for all OR provide flags]
+```
+
+### Docker container, without using the Makefile
+
+> This information is from the legacy documentation, so handle it with care. You should probably follow the commands
+from the Makefile.
+
 1. Build the image:
 ```sh
 $ docker-compose build
@@ -70,14 +99,13 @@ $ docker-compose run --rm laracastdl php ./start.php [empty for all OR provide f
 ```
 4. See [downloading specific series or lessons](#downloading-specific-series-or-lessons) for optional flags.
 
-Also works in the browser, but is better from the cli because of the instant feedback.
+## Using Laracasts Downloader
 
-## Downloading specific series or lessons
-- You can use series and lessons names
-- You can use series and lessons slugs (preferred because there are some custom slugs too)
-- You can download multiples series/lessons
+- You can download multiple `series` or `lessons`.
+- To download, you can specify the `name` or `slug` of the series or the lesson (the slug is preferred).
 
 ### Commands to download an entire series
+
 You can either use the Series slug (preferred):
 ```sh
 $ php start.php -s "series-slug-example"
@@ -90,6 +118,7 @@ $ php start.php --series-name "Series name example"
 ```
 
 ### Filter to download specific episodes of a series
+
 You can provide episode number(s) separated by comma ```,```:
 
 ```sh
@@ -97,7 +126,7 @@ $ php start.php -s "lesson-slug-example" -e "12,15"
 $ php start.php --series-name "series-slug-example" --series-episodes "12,15"
 ```
 
-This will only download episodes which you mentioned in
+This will only download the episodes which you mentioned in
 -e or --series-episodes flag, it will also ignore already downloaded episodes
 as usual.
 
@@ -105,16 +134,17 @@ as usual.
 $ php start.php -s "nuxtjs-from-scratch" -e "12,15" -s "laravel-from-scratch" -e "5"
 ```
 
-It will download episode 12 and 15 for "nuxtjs-from-scratch" and episode 5 for "laravel-from-scratch" course.
+It will download episodes 12 and 15 for "nuxtjs-from-scratch" and episode 5 for "laravel-from-scratch" course.
 
 ```sh
 $ php start.php -s "nuxtjs-from-scratch" -e "12,15" -s "laravel-from-scratch"
 ```
 
-It will download episode 12 and 15 for "nuxtjs-from-scratch" course and all episodes for "laravel-from-scratch" course.
+It will download episodes 12 and 15 for "nuxtjs-from-scratch" course and all episodes for "laravel-from-scratch" course.
 
 ## Troubleshooting
-If you have a `cURL error 60: SSL certificate problem: self signed certificate in certificate chain` or `SLL error: cURL error 35` do this:
+
+If you have a `cURL error 60: SSL certificate problem: self-signed certificate in certificate chain` or `SLL error: cURL error 35` do this:
 
 - Download [http://curl.haxx.se/ca/cacert.pem](http://curl.haxx.se/ca/cacert.pem)
 - Add `curl.cainfo = "PATH_TO/cacert.pem"` to your php.ini
